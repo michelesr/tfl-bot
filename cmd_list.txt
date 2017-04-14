@@ -1,0 +1,3 @@
+line - Show line status
+list - List all lines for the given mode
+modes - List all modes
