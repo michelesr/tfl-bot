@@ -4,8 +4,10 @@ from telegram.ext import Updater, CommandHandler
 import logging
 import tfl
 
-TOKEN = argv[1]
-LOG_LEVEL = logging.DEBUG
+with open('./token', 'r') as f:
+    TOKEN = f.read()
+
+LOG_LEVEL = logging.INFO
 
 
 def filter_args(update):
@@ -93,4 +95,4 @@ updater.dispatcher.add_handler(CommandHandler('modes', modes))
 updater.dispatcher.add_handler(CommandHandler('start', start))
 
 updater.dispatcher.add_error_handler(error)
-updater.start_polling()
+updater.start_polling(poll_interval=1.0, timeout=20)
