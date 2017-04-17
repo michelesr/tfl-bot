@@ -1,17 +1,20 @@
-from sys import argv
-from os import getenv
 from telegram import ReplyKeyboardMarkup, ParseMode
 from telegram.ext import Updater, CommandHandler
+import os
+import datetime
+import time
+import sys
 import logging
+import _thread
 import tfl
 
 LOG_LEVEL = logging.DEBUG
 
-POLL_INTERVAL = getenv('POLL_INTERVAL')
+POLL_INTERVAL = os.getenv('POLL_INTERVAL')
 if POLL_INTERVAL:
     POLL_INTERVAL = float(POLL_INTERVAL)
 
-TIMEOUT = getenv('TIMEOUT')
+TIMEOUT = os.getenv('TIMEOUT')
 if TIMEOUT:
     TIMEOUT = float(TIMEOUT)
 
@@ -98,9 +101,27 @@ def line(bot, update, args=None):
                 parse_mode=ParseMode.HTML)
 
 
-def debug(bot, update):
-    logger.debug('/debug handler called')
 
+# use this to fix restart loop if necessary
+def check_timedelta(update):
+    time = update.message.date
+    now = datetime.datetime.now()
+    delta = datetime.timedelta(seconds=5)
+    return (now - time) < delta
+
+
+def debug(bot, update, args=None):
+    logger.debug('/debug handler called')
+    # list of user ids allowed to use debug commands
+    trusted_users = []
+    trust = update.message.from_user.id in trusted_users
+    if not trust or not args:
+        return
+    elif args[0] in ('restart'):
+        sleep_time = 2
+        logger.warn('Restarting in {} seconds'.format(sleep_time))
+        time.sleep(sleep_time)
+        os.execl(sys.executable, sys.executable, *sys.argv)
 
 updater = Updater(token=TOKEN)
 updater.dispatcher.add_handler(CommandHandler('line', line, pass_args=True))
@@ -108,7 +129,8 @@ updater.dispatcher.add_handler(
     CommandHandler('list', list_lines, pass_args=True))
 updater.dispatcher.add_handler(CommandHandler('modes', modes))
 updater.dispatcher.add_handler(CommandHandler('start', start))
-updater.dispatcher.add_handler(CommandHandler('debug', debug))
+updater.dispatcher.add_handler(
+    CommandHandler('debug', debug, pass_args=True))
 
 updater.dispatcher.add_error_handler(error)
 updater.start_polling(poll_interval=1.0, timeout=20)
