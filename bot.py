@@ -104,3 +104,4 @@ updater.dispatcher.add_handler(CommandHandler('start', start))
 
 updater.dispatcher.add_error_handler(error)
 updater.start_polling(poll_interval=1.0, timeout=20)
+updater.idle()
