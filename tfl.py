@@ -34,7 +34,7 @@ def get_lines_status(mode):
 
 
 def format_status(status):
-    if status.get('httpStatusCode') == 404:
+    if type(status) == dict and status.get('httpStatusCode') == 404:
         return [status.get('message', 'There was an error with your request')]
     status = status[0]
     messages = []
