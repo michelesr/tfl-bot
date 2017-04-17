@@ -1,14 +1,22 @@
 from sys import argv
+from os import getenv
 from telegram import ReplyKeyboardMarkup
 from telegram.ext import Updater, CommandHandler
 import logging
 import tfl
 
-with open('./token', 'r') as f:
-    TOKEN = f.read()
-
 LOG_LEVEL = logging.DEBUG
 
+POLL_INTERVAL = getenv('POLL_INTERVAL')
+if POLL_INTERVAL:
+    POLL_INTERVAL = float(POLL_INTERVAL)
+
+TIMEOUT = getenv('TIMEOUT')
+if TIMEOUT:
+    TIMEOUT = float(TIMEOUT)
+
+with open('./token', 'r') as f:
+    TOKEN = f.read()
 
 def filter_args(update):
     args = update.message.text.split(' ')
