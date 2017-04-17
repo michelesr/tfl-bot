@@ -7,7 +7,7 @@ import tfl
 with open('./token', 'r') as f:
     TOKEN = f.read()
 
-LOG_LEVEL = logging.INFO
+LOG_LEVEL = logging.DEBUG
 
 
 def filter_args(update):
