@@ -1,6 +1,6 @@
 from sys import argv
 from os import getenv
-from telegram import ReplyKeyboardMarkup
+from telegram import ReplyKeyboardMarkup, ParseMode
 from telegram.ext import Updater, CommandHandler
 import logging
 import tfl
@@ -86,7 +86,9 @@ def line(bot, update, args=None):
         return line_menu(bot, update)
     for line in args:
         for message in tfl.format_status(tfl.get_line_status(line)):
-            bot.sendMessage(update.message.chat_id, text=message)
+            bot.sendMessage(update.message.chat_id,
+                            text=message,
+                            parse_mode=ParseMode.HTML)
 
 
 updater = Updater(token=TOKEN)
