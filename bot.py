@@ -15,8 +15,14 @@ TIMEOUT = getenv('TIMEOUT')
 if TIMEOUT:
     TIMEOUT = float(TIMEOUT)
 
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=LOG_LEVEL)
+logger = logging.getLogger(__name__)
+
 with open('./token', 'r') as f:
     TOKEN = f.read()
+
 
 def filter_args(update):
     args = update.message.text.split(' ')
@@ -86,23 +92,23 @@ def line(bot, update, args=None):
         return line_menu(bot, update)
     for line in args:
         for message in tfl.format_status(tfl.get_line_status(line)):
-            bot.sendMessage(update.message.chat_id,
-                            text=message,
-                            parse_mode=ParseMode.HTML)
+            bot.sendMessage(
+                update.message.chat_id,
+                text=message,
+                parse_mode=ParseMode.HTML)
+
+
+def debug(bot, update):
+    logger.debug('/debug handler called')
 
 
 updater = Updater(token=TOKEN)
-
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=LOG_LEVEL)
-logger = logging.getLogger(__name__)
-
 updater.dispatcher.add_handler(CommandHandler('line', line, pass_args=True))
 updater.dispatcher.add_handler(
     CommandHandler('list', list_lines, pass_args=True))
 updater.dispatcher.add_handler(CommandHandler('modes', modes))
 updater.dispatcher.add_handler(CommandHandler('start', start))
+updater.dispatcher.add_handler(CommandHandler('debug', debug))
 
 updater.dispatcher.add_error_handler(error)
 updater.start_polling(poll_interval=1.0, timeout=20)
