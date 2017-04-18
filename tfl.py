@@ -38,8 +38,8 @@ def format_status(status):
         return [status.get('message', 'There was an error with your request')]
     status = status[0]
     messages = []
-    messages.append('Status for {} ({}) last modified on {}'.format(
-        status['name'], status['modeName'], format_date(status['modified'])))
+    messages.append(
+        'Status for {} line ({})'.format(status['name'], status['modeName']))
     for s in status['lineStatuses']:
         messages.append(s['statusSeverityDescription'])
         if 'disruption' in s.keys():
